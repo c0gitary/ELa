@@ -3,9 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace ela {
-
-    struct Variable {
+struct Variable {
         enum class Type {
             INTEGER,
             FLOAT,
@@ -31,5 +29,3 @@ namespace ela {
 
         std::string name;
     };
-
-}
