@@ -2,6 +2,8 @@
 
 #include "typedefs.hpp"
 
+#include <sstream>
+#include <fstream>
 
 namespace utils{
 
@@ -30,16 +32,6 @@ namespace utils{
         auto it = __str.begin();
         for(;it != __str.end() && std::isdigit(*it) || *it=='.'; ++it) {}
         return !__str.empty() && it == __str.end();
-    }
-
-    static std::string file__read_and_write(const std::string& __filename){
-        std::ifstream file(__filename);
-
-        if (!file.is_open()) {
-            throw std::runtime_error("Unable to open file");
-        }
-        
-         
     }
 
 }
