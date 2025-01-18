@@ -11,4 +11,8 @@ add_executable(${PROJECT_NAME}
         include/utils.hpp
         include/typedefs.hpp
         include/operator.hpp
+        src/Lexer.cpp
+        include/Lexer.hpp
+        include/defs.hpp
+        include/defs.hpp
 )

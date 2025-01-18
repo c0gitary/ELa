@@ -1,14 +1,17 @@
 #pragma once
 
-#include "typedefs.hpp"
-
-#include <sstream>
 #include <fstream>
+#include <sstream>
+
+#include "typedefs.hpp"
+#include "defs.hpp"
 
 namespace utils{
 
-    static std::string ctos(const char __ch) {
-        return std::basic_string<char>(__ch, 1);
+    static std::string ctos(const char& __ch) {
+        std::string __t;
+        __t += __ch;
+        return __t;
     }
 
     static Variable::Type get_type_number(const std::string& number) {
@@ -32,6 +35,16 @@ namespace utils{
         auto it = __str.begin();
         for(;it != __str.end() && std::isdigit(*it) || *it=='.'; ++it) {}
         return !__str.empty() && it == __str.end();
+    }
+
+    static std::string file_to_str(const std::string& __filename) {
+        std::ifstream __file(__filename);
+        if(!__file.is_open()) throw std::runtime_error("File not opening");
+
+        std::stringstream __buffer;
+        __buffer << __file.rdbuf();
+
+        return __buffer.str();
     }
 
 }
