@@ -12,7 +12,8 @@ void Lexer::add_token__char(const Token::Type &ty, const char &ch) {
 }
 
 void Lexer::add_token__separator(const char& ch) {
-    this->tokens.push_back({Token::Type::SEPARATOR, utils::ctos(ch)});
+    if(utils::is_sep(ch))
+        this->tokens.push_back({Token::Type::SEPARATOR, utils::ctos(ch)});
 }
 
 
@@ -54,7 +55,7 @@ void Lexer::tokenize() {
                 cur_char = this->source[++i];
             }
             this->add_token(Token::Type::CONTAINER, temp_string);
-            this->add_token__separator(defines::sep::close::paren);
+            this->add_token__separator(cur_char);
             temp_string.clear();
             continue;
         }
@@ -64,11 +65,11 @@ void Lexer::tokenize() {
             temp_string += cur_char;
             cur_char = this->source[++i];
             while(!utils::is_quote(cur_char)) {
-                cur_char = this->source[i++];
                 temp_string += cur_char;
+                cur_char = this->source[++i];
             }
+            temp_string += cur_char;
             this->add_token(Token::Type::STRING, temp_string);
-            this->add_token__separator(defines::sep::close::paren);
             temp_string.clear();
             continue;
         }
