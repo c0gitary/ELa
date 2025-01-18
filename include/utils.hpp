@@ -43,6 +43,7 @@ namespace utils{
 
     static bool is_number(const std::string& __str) {
         auto it = __str.begin();
+        if(*it == '-') ++it;
         for(;it != __str.end() && std::isdigit(*it) || *it=='.'; ++it) {}
         return !__str.empty() && it == __str.end();
     }
