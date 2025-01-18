@@ -15,4 +15,7 @@ add_executable(${PROJECT_NAME}
         include/Lexer.hpp
         include/defs.hpp
         include/defs.hpp
+        src/Parser.cpp
+        include/Parser.hpp
+        include/Parser.hpp
 )

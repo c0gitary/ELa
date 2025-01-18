@@ -1,19 +1,24 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
-struct Variable {
+struct Parameter {
     enum class Type {
-        INTEGER,
-        FLOAT,
-        BOOLEAN,
+        IDENTIFIER,
         STRING,
+        NUMBER,
         CONTAINER
     } type;
 
     std::string name;
-    std::string value;
 };
+
+struct Function {
+    std::string name;
+    std::vector<Parameter> params;
+};
+
 
 struct Token {
     enum class Type {

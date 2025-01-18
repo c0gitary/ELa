@@ -29,22 +29,21 @@ void Lexer::tokenize() {
         char cur_char = this->source[i];
 
         // comment
-        if(defines::sep::is_comment(cur_char)) {
+        if(utils::is_comment(cur_char)) {
             while((cur_char = this->source[++i]) != '\n');
         }
 
         // array
-        if(defines::sep::is_container__open(cur_char)) {
+        if(utils::is_container__open(cur_char)) {
             container_stack.push(cur_char);
+            temp_string += cur_char;
             cur_char = this->source[++i];
 
             while(!container_stack.empty()) {
-                if(defines::sep::is_container__open(cur_char)) {
+                if(utils::is_container__open(cur_char)) {
                     container_stack.push(cur_char);
-                } else if(defines::sep::is_container__close(cur_char)) {
+                } else if(utils::is_container__close(cur_char)) {
                     container_stack.pop();
-                    if(container_stack.empty())
-                        break;
                 }
 
                 if(std::isspace(cur_char)) {
@@ -54,26 +53,28 @@ void Lexer::tokenize() {
                 temp_string += cur_char;
                 cur_char = this->source[++i];
             }
-
             this->add_token(Token::Type::CONTAINER, temp_string);
+            this->add_token__separator(defines::sep::close::paren);
             temp_string.clear();
             continue;
         }
 
         // string
-        if(defines::sep::is_quote(cur_char)) {
+        if(utils::is_quote(cur_char)) {
+            temp_string += cur_char;
             cur_char = this->source[++i];
-            while(!defines::sep::is_quote(cur_char)) {
+            while(!utils::is_quote(cur_char)) {
+                cur_char = this->source[i++];
                 temp_string += cur_char;
-                cur_char = this->source[++i];
             }
             this->add_token(Token::Type::STRING, temp_string);
+            this->add_token__separator(defines::sep::close::paren);
             temp_string.clear();
             continue;
         }
 
         // params
-        if(defines::sep::is_sep(cur_char)) {
+        if(utils::is_sep(cur_char)) {
             if(!temp_string.empty()) {
                 this->add_token(
                     (utils::is_number(temp_string) ? Token::Type::NUMBER : Token::Type::IDENTIFIER),

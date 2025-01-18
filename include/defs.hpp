@@ -36,26 +36,11 @@ namespace defines {
                     ch == close::curly);
         }
 
-        static bool is_sep(const char& ch) {
-            return (is_open(ch) || is_close(ch) || ch == comma);
-        }
+    }
 
-        static bool is_quote(const char& ch) {
-            return ch == quote;
-        }
-
-        static bool is_comment(const char& ch) {
-            return ch == comment;
-        }
-
-        static bool is_container__open(const char& ch) {
-            return (ch == open::curly || ch == open::square);
-        }
-
-        static bool is_container__close(const char& ch) {
-            return (ch == close::curly || ch == close::square);
-        }
-
+    namespace keywords {
+        inline static constexpr auto __true = "ИСТИННА";
+        inline static constexpr auto __false = "ЛОЖЬ";
     }
 
     namespace builtins { // default functions
