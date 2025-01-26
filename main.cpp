@@ -1,30 +1,31 @@
 #include "include/Lexer.hpp"
 #include "include/Parser.hpp"
+#include "include/Interpreter.hpp"
 
 #include <windows.h>
 #include <iostream>
 
-int main() {
+int main(int argc, char** argv) {
     SetConsoleOutputCP(CP_UTF8);
 
-    const auto path = R"(E:\dev_scripts\ela_git\ELa\test.ela)";
+    try {
+        const std::string path = argv[1];
 
-    Lexer lex(utils::file_to_str(path));
-    lex.tokenize();
-    // lex.print_tokens();
-    const auto tokens = lex.get_tokens();
-
-    Parser parser(tokens);
-
-    for(auto fns = parser.get_functions(); const auto&[name, params] : fns) {
-        std::cout << "Имя функции: " << name << std::endl;
-        std::cout << "Параметры функции: " << std::endl;
-        for(const auto& [type, name] : params) {
-            std::cout << "Имя параметра: " << name << '\t' << "Тип параметра: " << utils::get_type_value(type) << std::endl;
-        }
+        Lexer lex(utils::file_to_str(path));
+        lex.tokenize();
+        // lex.print_tokens();
         std::cout << std::endl;
-    }
+        const auto tokens = lex.get_tokens();
 
+        Parser parser(tokens);
+        const auto functions = parser.get_functions();
+        // parser.print_functions(functions);
+
+        Interpreter interpreter(functions);
+        interpreter.execute();
+    } catch(const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
 
     return 0;
 }

@@ -5,6 +5,7 @@
 #include "utils.hpp"
 
 #include <stdexcept>
+#include <iostream>
 
 class Parser {
     std::vector<Token> tokens;
@@ -29,6 +30,7 @@ class Parser {
 public:
     explicit Parser(const std::vector<Token>& __tokens);
     std::vector<Function> get_functions() noexcept;
+    static void print_functions(const std::vector<Function>& fns);
 };
 
 

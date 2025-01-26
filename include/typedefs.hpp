@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 struct Parameter {
@@ -19,7 +20,6 @@ struct Function {
     std::vector<Parameter> params;
 };
 
-
 struct Token {
     enum class Type {
         IDENTIFIER,
@@ -32,4 +32,41 @@ struct Token {
     } type;
 
     std::string name;
+};
+
+struct Variable {
+    enum class Type {
+        FLOAT,
+        INT,
+        IDENTIFIER,
+        STRING,
+        BOOL,
+        CONTAINER
+    } type;
+    std::string name;
+    std::string value;
+};
+
+struct State {
+    std::vector<Parameter> params;
+
+    void set_var(const Variable::Type& type, const std::string& name, const std::string& val) {
+        this->vars[name] = {
+            .type = type,
+            .name = name,
+            .value = val
+        };
+    }
+
+    Variable get_value(const std::string& name) noexcept {
+        return this->vars[name];
+    }
+
+    bool contains(const std::string& name) const noexcept {
+        return this->vars.contains(name);
+    }
+
+
+private:
+    std::unordered_map<std::string, Variable> vars;
 };

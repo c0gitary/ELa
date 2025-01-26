@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_CXX_FLAGS "-static")
+set(CMAKE_CXX_FLAGS)
 
 project(ela)
 
@@ -17,5 +17,7 @@ add_executable(${PROJECT_NAME}
         include/defs.hpp
         src/Parser.cpp
         include/Parser.hpp
-        include/Parser.hpp
+        include/builtins.hpp
+        src/Interpreter.cpp
+        include/Interpreter.hpp
 )

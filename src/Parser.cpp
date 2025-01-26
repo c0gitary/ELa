@@ -61,6 +61,19 @@ std::vector<Function> Parser::get_functions() noexcept {
     return this->parse_functions();
 }
 
+void Parser::print_functions(const std::vector<Function>& fns) {
+    for(const auto& [name, params] : fns) {
+        std::cout << "Функция: " << name << std::endl;
+        std::cout << "Параметры функции:\n";
+        for(const auto&[type_param, name_param] : params) {
+            std::cout << ">> " << utils::get_type_value(type_param) << ' ' << name_param << std::endl;
+        }
+        std::cout << std::endl;
+    }
+}
+
+
+
 Function Parser::parse_function() {
     Function __function;
 

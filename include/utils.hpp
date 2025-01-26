@@ -2,6 +2,8 @@
 
 #include <fstream>
 #include <sstream>
+#include <cstdint>
+#include <algorithm>
 
 #include "typedefs.hpp"
 #include "defs.hpp"
@@ -48,6 +50,23 @@ namespace utils{
         return !__str.empty() && it == __str.end();
     }
 
+    static bool is_float(const std::string& __num) {
+        const auto cnt_dot = std::ranges::count(__num, '.');
+        if(is_number(__num) && cnt_dot == 1) return true;
+        if(cnt_dot == 0) return false;
+        throw std::runtime_error("Error number");
+    }
+
+    template<typename T>
+    static T convert_number(const Variable& __var) {
+        if(__var.type == Variable::Type::INT)
+            return std::stoi(__var.value);
+        if(__var.type == Variable::Type::FLOAT)
+            return std::stof(__var.value);
+        throw std::runtime_error("CONVERT_NUMBER -> Invalid args");
+    }
+
+
     static std::string file_to_str(const std::string& __filename) {
         std::ifstream __file(__filename);
         if(!__file.is_open()) throw std::runtime_error("File not opening");
@@ -57,6 +76,39 @@ namespace utils{
 
         return __buffer.str();
     }
+
+    static Variable::Type get_type_param(const Parameter& param) {
+        switch(param.type) {
+            case Parameter::Type::NUMBER: return (is_float(param.name) ? Variable::Type::FLOAT : Variable::Type::INT);
+            case Parameter::Type::STRING: return Variable::Type::STRING;
+            case Parameter::Type::CONTAINER: return Variable::Type::CONTAINER;
+            case Parameter::Type::IDENTIFIER: return Variable::Type::IDENTIFIER;
+        }
+        throw std::runtime_error("Invalid type");
+    }
+
+    static bool is_id_param(const Parameter& param) {
+        return param.type == Parameter::Type::IDENTIFIER;
+    }
+
+    static bool is_number_param(const Parameter& param) {
+        return param.type == Parameter::Type::NUMBER;
+    }
+
+    static bool is_string_param(const Parameter& param) {
+        return param.type == Parameter::Type::STRING;
+    }
+
+    static std::string extract_content(const std::string& __str) {
+        if(__str.size() < 2 || __str.front() != defines::sep::quote || __str.back() != defines::sep::quote)
+            throw std::runtime_error("String does not start & end with quotes");
+        return __str.substr(1ULL, __str.size() - 2ULL);
+    }
+
+    static std::string add_quotes(const std::string& __str) {
+        return defines::sep::quote + __str + defines::sep::quote;
+    }
+
 
     static bool is_sep(const char& ch) {
         return (defines::sep::is_open(ch) || defines::sep::is_close(ch) || ch == defines::sep::comma);
@@ -90,5 +142,6 @@ namespace utils{
     static bool is_bool(const std::string& __value) {
         return (__value == defines::keywords::__true || __value == defines::keywords::__false);
     }
+
 
 }
