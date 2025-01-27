@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
+
 struct Parameter {
     enum class Type {
         IDENTIFIER,
@@ -36,8 +37,8 @@ struct Token {
 
 struct Variable {
     enum class Type {
-        FLOAT,
         INT,
+        FLOAT,
         IDENTIFIER,
         STRING,
         BOOL,
@@ -57,6 +58,12 @@ struct State {
             .value = val
         };
     }
+
+    void rem_var(const Variable& varName) noexcept {
+        if(this->contains(varName.name))
+            this->vars.erase(varName.name);
+    }
+
 
     Variable get_value(const std::string& name) noexcept {
         return this->vars[name];

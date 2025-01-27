@@ -3,6 +3,7 @@
 #include "typedefs.hpp"
 #include "utils.hpp"
 #include "defs.hpp"
+#include "operator.hpp"
 
 #include <iostream>
 #include <functional>
@@ -45,15 +46,31 @@ namespace builtins {
 
     namespace math {
         static void mul(State&);
-        // static void div(State&);
-        // static void mod(State&);
-        // static void sum(State&);
-        // static void sub(State&);
+        static void div(State&);
+        static void sum(State&);
+        static void sub(State&);
+        static void mod(State&);
+        static void log(State&);
+        static void pow(State&);
+        static void rand(State&);
+        static void round(State&);
+        static void floor(State&);
+        static void ceil(State&);
+
+        template<template <class> class Op>
+        static void binary_op(State&);
+
+        template<template <class> class Op>
+        static void unary_op(State&);
+
+        template<template <class> class Op>
+        static void math_func(State&);
+
     }
 
 
     inline static std::unordered_map<std::string, std::function<void(State&)>> __builtins {
-        {defines::builtins::internal::new_var, builtins::internal::new_var},
+        {defines::builtins::internal::new_var,   internal::new_var},
 
         {defines::builtins::io::clear, io::clear},
         {defines::builtins::io::input, io::input},
@@ -73,6 +90,15 @@ namespace builtins {
         // {defines::builtins::file::write, file::write},
         // {defines::builtins::file::move, file::move},
         // {defines::builtins::file::remove, file::remove}
+
+        {defines::builtins::math::mul, math::mul},
+        {defines::builtins::math::div, math::div},
+        {defines::builtins::math::sum, math::sum},
+        {defines::builtins::math::sub, math::sub},
+        {defines::builtins::math::pow, math::pow},
+        {defines::builtins::math::log, math::log},
+        // {defines::builtins::math::rand, math::rand},
+        // {defines::builtins::math::round, math::round}
     };
 
 }
@@ -251,4 +277,88 @@ inline void builtins::time::current_time(State &s) {
     throw std::runtime_error("TIME::CUR_TIME -> Invalid args");
 }
 
+inline void builtins::math::mul(State &s) {
+    builtins::math::binary_op<std::multiplies>(s);
+}
 
+inline void builtins::math::div(State &s) {
+    builtins::math::binary_op<std::divides>(s);
+}
+
+inline void builtins::math::sum(State &s) {
+    builtins::math::binary_op<std::plus>(s);
+}
+
+inline void builtins::math::sub(State &s) {
+    builtins::math::binary_op<std::minus>(s);
+}
+
+inline void builtins::math::mod(State &s) {
+    builtins::math::binary_op<std::minus>(s);
+}
+
+inline void builtins::math::log(State &s) {
+    builtins::math::math_func<ela::op::log>(s);
+}
+
+inline void builtins::math::pow(State &s) {
+    builtins::math::math_func<ela::op::pow>(s);
+}
+
+
+template<template <class> class Op>
+void builtins::math::binary_op(State& s) {
+    if(s.params.size() == 3 && utils::is_id_param(s.params[0])) {
+        const Variable right = (utils::is_id_param(s.params[1]) ? s.get_value(s.params[1].name) : utils::set_anon_number(s.params[1].name));
+        const Variable left = (utils::is_id_param(s.params[2]) ? s.get_value(s.params[2].name) : utils::set_anon_number(s.params[2].name));
+        const Variable::Type type = (right.type > left.type ? right.type : left.type);
+        std::string res;
+
+        if(type == Variable::Type::INT) {
+            Op<int> op;
+            res = std::to_string(op(std::stoi(right.value), std::stoi(left.value)));
+        }
+        else if(type == Variable::Type::FLOAT) {
+            Op<float> op;
+            res = std::to_string(op(std::stoi(right.value), std::stoi(left.value)));
+        }
+
+        s.set_var(
+            type,
+            s.params[0].name,
+            res
+        );
+
+        if(utils::is_anon_number(right)) s.rem_var(right);
+        if(utils::is_anon_number(left)) s.rem_var(left);
+
+        return;
+    }
+    throw std::runtime_error("MATH::BINARY_OPERATION -> Invalid args");
+}
+
+template<template <class> class Op>
+void builtins::math::math_func(State &s) {
+    if(s.params.size() == 3 && utils::is_id_param(s.params[0])) {
+        const Variable right = (utils::is_id_param(s.params[1]) ? s.get_value(s.params[1].name) : utils::set_anon_number(s.params[1].name));
+        const Variable left = (utils::is_id_param(s.params[2]) ? s.get_value(s.params[2].name) : utils::set_anon_number(s.params[2].name));
+        const Variable::Type type = (right.type > left.type ? right.type : left.type);
+        std::string res;
+
+        if(type == Variable::Type::INT) {
+            Op<int> op;
+            res = std::to_string(op(std::stoi(right.value), std::stoi(left.value)));
+        }
+        else if(type == Variable::Type::FLOAT) {
+            Op<float> op;
+            res = std::to_string(op(std::stoi(right.value), std::stoi(left.value)));
+        }
+
+        s.set_var(type,s.params[0].name,res);
+
+        if(utils::is_anon_number(right)) s.rem_var(right);
+        if(utils::is_anon_number(left)) s.rem_var(left);
+        return;
+    }
+    throw std::runtime_error("MATH::BINARY_OPERATION -> Invalid args");
+}

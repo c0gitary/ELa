@@ -4,6 +4,10 @@
 
 namespace defines {
 
+    namespace __internal {
+        inline static constexpr auto anon_number = "__anon__number__";
+    }
+
     namespace sep { //separator
 
         namespace open {
@@ -68,6 +72,7 @@ namespace defines {
             inline static constexpr auto l_not  = "логическое_не";
             inline static constexpr auto rand   = "рандомное_число";
             inline static constexpr auto round  = "округление";
+            inline static constexpr auto pow    = "степень";
         }
 
         namespace time {

@@ -67,6 +67,7 @@ namespace utils{
     }
 
 
+
     static std::string file_to_str(const std::string& __filename) {
         std::ifstream __file(__filename);
         if(!__file.is_open()) throw std::runtime_error("File not opening");
@@ -85,6 +86,21 @@ namespace utils{
             case Parameter::Type::IDENTIFIER: return Variable::Type::IDENTIFIER;
         }
         throw std::runtime_error("Invalid type");
+    }
+
+    static Variable set_anon_number(const std::string& number) {
+        static unsigned __number_idx__{};
+        const auto var = Variable(
+            (is_float(number) ? Variable::Type::FLOAT : Variable::Type::INT),
+            defines::__internal::anon_number + __number_idx__ + number,
+            number
+        );
+        __number_idx__++;
+        return var;
+    }
+
+    static bool is_anon_number(const Variable& var) {
+        return var.name.find(defines::__internal::anon_number) != std::string::npos;
     }
 
     static bool is_id_param(const Parameter& param) {
