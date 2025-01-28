@@ -3,7 +3,6 @@
 #include "include/Interpreter.hpp"
 
 #include <windows.h>
-#include <iostream>
 
 int main(int argc, char** argv) {
     SetConsoleOutputCP(CP_UTF8);

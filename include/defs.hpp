@@ -1,7 +1,5 @@
 #pragma once
 
-#include <array>
-
 namespace defines {
 
     namespace __internal {
@@ -43,14 +41,19 @@ namespace defines {
     }
 
     namespace keywords {
-        inline static constexpr auto __true  = "ИСТИННА";
-        inline static constexpr auto __false = "ЛОЖЬ";
+    
+        namespace logic {
+            inline static constexpr auto __true  = "ИСТИННА";
+            inline static constexpr auto __false = "ЛОЖЬ";
+        }
+
     }
 
     namespace builtins { // default functions
 
         namespace internal {
             inline static constexpr auto new_var = "новая_переменная";
+            inline static constexpr auto rem_var = "удалить_переменную";
         }
 
         namespace io { // input - output
@@ -70,9 +73,10 @@ namespace defines {
             inline static constexpr auto l_and  = "логическое_и";
             inline static constexpr auto l_or   = "логическое_или";
             inline static constexpr auto l_not  = "логическое_не";
-            inline static constexpr auto rand   = "рандомное_число";
+            inline static constexpr auto rand   = "случайное_число";
             inline static constexpr auto round  = "округление";
             inline static constexpr auto pow    = "степень";
+            inline static constexpr auto fact   = "факториал";
         }
 
         namespace time {
@@ -81,14 +85,20 @@ namespace defines {
         }
 
         namespace file {
-            inline static constexpr auto create = "создать";
-            inline static constexpr auto remove = "удалить";
-            inline static constexpr auto open   = "открыть";
-            inline static constexpr auto read   = "прочитать";
-            inline static constexpr auto copy   = "скопировать";
-            inline static constexpr auto write  = "написать";
-            inline static constexpr auto move   = "переместить";
-            inline static constexpr auto close  = "закрыть";
+            inline static constexpr auto create = "создать_файл";
+            inline static constexpr auto remove = "удалить_файл";
+            inline static constexpr auto open   = "открыть_файл";
+            inline static constexpr auto read   = "прочитать_файл";
+            inline static constexpr auto copy   = "скопировать_файл";
+            inline static constexpr auto write  = "написать_в_файл";
+            inline static constexpr auto add    = "добавить_в_файл";
+            inline static constexpr auto move   = "переместить_файл";
+            inline static constexpr auto close  = "закрыть_файл";
+        }
+
+        namespace folder {
+            inline static constexpr auto newfolder  = "новая_папка"; 
+            inline static constexpr auto remfolder  = "удалить_папку"; 
         }
 
         namespace container { // arrays
@@ -97,7 +107,7 @@ namespace defines {
 
         namespace string {
             inline static constexpr auto add            = "сложить_строки";
-            inline static constexpr auto substring      = "подстрока";
+            inline static constexpr auto substring      = "найти_подстроку";
             inline static constexpr auto lenght         = "длина_строки";
             inline static constexpr auto find_string    = "найти_строку";
             inline static constexpr auto find_char      = "найти_символ";

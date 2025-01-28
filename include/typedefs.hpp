@@ -59,9 +59,14 @@ struct State {
         };
     }
 
-    void rem_var(const Variable& varName) noexcept {
-        if(this->contains(varName.name))
-            this->vars.erase(varName.name);
+    void rem_var(const Variable& var) noexcept {
+        if(this->contains(var.name))
+            this->vars.erase(var.name);
+    }
+
+    void rem_var(const std::string& varName) noexcept {
+        if(this->contains(varName))
+            this->vars.erase(varName);
     }
 
 

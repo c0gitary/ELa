@@ -117,7 +117,7 @@ namespace utils{
 
     static std::string extract_content(const std::string& __str) {
         if(__str.size() < 2 || __str.front() != defines::sep::quote || __str.back() != defines::sep::quote)
-            throw std::runtime_error("String does not start & end with quotes");
+            return __str;
         return __str.substr(1ULL, __str.size() - 2ULL);
     }
 
@@ -156,7 +156,7 @@ namespace utils{
     }
 
     static bool is_bool(const std::string& __value) {
-        return (__value == defines::keywords::__true || __value == defines::keywords::__false);
+        return (__value == defines::keywords::logic::__true || __value == defines::keywords::logic::__false);
     }
 
 
