@@ -112,7 +112,7 @@ namespace defines {
         namespace flow { // stream
             // inline static constexpr auto __if  = "если";
             inline static constexpr auto loop = "цикл";
-            inline static constexpr auto repeat = "повторять";
+            inline static constexpr auto repeat  = "повторять";
         }
 
 

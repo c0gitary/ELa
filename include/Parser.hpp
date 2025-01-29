@@ -1,8 +1,8 @@
 #pragma once
 
-#include "typedefs.hpp"
-#include "defs.hpp"
-#include "utils.hpp"
+#include "tools/typedefs.hpp"
+#include "tools/defs.hpp"
+#include "tools/utils.hpp"
 
 #include <stdexcept>
 #include <iostream>

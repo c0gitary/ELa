@@ -1,7 +1,7 @@
 #pragma once
 
-#include "typedefs.hpp"
-#include "utils.hpp"
+#include "tools/typedefs.hpp"
+#include "tools/utils.hpp"
 
 #include <vector>
 #include <string>
