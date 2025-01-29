@@ -1,6 +1,6 @@
-#include "include/Lexer.hpp"
-#include "include/Parser.hpp"
-#include "include/Interpreter.hpp"
+#include "../include/Lexer.hpp"
+#include "../include/Parser.hpp"
+#include "../include/Interpreter.hpp"
 
 #include <windows.h>
 
