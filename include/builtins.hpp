@@ -13,6 +13,7 @@
 #include <filesystem>
 
 namespace builtins {
+
     namespace internal {
         static void new_var(State&);
         static void remove_var(State&);
@@ -40,6 +41,7 @@ namespace builtins {
     namespace folder {
         static void newfolder(State&);
         static void remfolder(State&);
+        static void movefolder(State&);
     }
 
 
@@ -76,30 +78,17 @@ namespace builtins {
 
     }
 
-    namespace container {
+    namespace container {}
 
-        namespace array {
-            static void append(State&);
-            static void remove(State&);
-            static void get_element(State&);
-            static void contains(State&);
-            static void length(State&);
-            static void reserve(State&);
-            static void clear(State&);
-            static void pop(State&);
-            static void sort(State&);
-        }
-
-        namespace string {
+    namespace string {
             static void concat(State&);
             static void substring(State&);
             static void lenght(State&);
         }
-        
-    }
 
     namespace flow {
         static void loop(State&);
+        // static void repeat(State&);
     }
 
     inline static std::unordered_map<std::string, std::function<void(State&)>> __builtins {
@@ -111,9 +100,9 @@ namespace builtins {
         {defines::builtins::io::output, io::print},
         {defines::builtins::io::pause, io::pause},
 
-        {defines::builtins::container::string::add, container::string::concat},
-        {defines::builtins::container::string::lenght, container::string::lenght},
-        {defines::builtins::container::string::substring, container::string::substring},
+        {defines::builtins::string::add, string::concat},
+        {defines::builtins::string::lenght, string::lenght},
+        {defines::builtins::string::substring, string::substring},
 
         {defines::builtins::time::cur_date, time::current_date},
         {defines::builtins::time::cur_time, time::current_time},
@@ -167,6 +156,8 @@ inline void builtins::flow::loop(State& s){
     throw std::runtime_error("FLOW::LOOP -> Invalid args");
 }
 
+
+
 inline void builtins::internal::new_var(State & s) {
     if(s.params.size() == 2) {
         const auto ty_var = utils::get_type_param(s.params[1]);
@@ -203,14 +194,7 @@ inline void builtins::internal::remove_var(State& s) {
 
 inline void builtins::io::print(State & s) {
     for(std::size_t i{}; i < s.params.size(); i++) {
-        const auto str = (utils::is_id_param(s.params[i]) ? s.get_var(s.params[i].name).value : utils::extract_content(s.params[i].name));
-        bool is_cont = false;
-        if(utils::is_container__open(str)){
-            
-        }
-        else {
-            std::cout << std << ' ';
-        }
+        std::cout << (utils::is_id_param(s.params[i]) ? s.get_var(s.params[i].name).value : utils::extract_content(s.params[i].name)) << ' ';
     }
     std::cout << std::endl;
 }

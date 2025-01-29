@@ -48,11 +48,13 @@ struct Variable {
     std::string value;
 };
 
+static std::unordered_map<std::string, Variable> global_variables;
+
 struct State {
     std::vector<Parameter> params;
 
     void set_var(const Variable::Type& type, const std::string& name, const std::string& val) {
-        this->vars[name] = {
+        global_variables[name] = {
             .type = type,
             .name = name,
             .value = val
@@ -61,31 +63,20 @@ struct State {
 
     void rem_var(const Variable& var) noexcept {
         if(this->contains(var.name))
-            this->vars.erase(var.name);
+            global_variables.erase(var.name);
     }
 
     void rem_var(const std::string& varName) noexcept {
         if(this->contains(varName))
-            this->vars.erase(varName);
+            global_variables.erase(varName);
     }
 
 
     Variable get_var(const std::string& name) noexcept {
-        return this->vars[name];
+        return global_variables[name];
     }
 
     bool contains(const std::string& name) const noexcept {
-        return this->vars.contains(name);
+        return global_variables.contains(name);
     }
-
-    std::string get_func_new_var() noexcept {
-        std::string __str_func = "";
-        for(const auto& [nameVar, Var] : this->vars){
-            __str_func += ("новая_переменная(" + nameVar + "," + Var.value + ");");
-        }
-        return __str_func;
-    }
-
-private:
-    std::unordered_map<std::string, Variable> vars;
 };

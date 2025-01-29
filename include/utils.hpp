@@ -128,11 +128,11 @@ namespace utils{
     }
 
     static bool is_container__open(const char& ch) {
-        return (ch == defines::sep::open::curly || ch == defines::sep::open::square);
+        return ch == defines::sep::open::curly;
     }
 
     static bool is_container__close(const char& ch) {
-        return (ch == defines::sep::close::curly || ch == defines::sep::close::square);
+        return ch == defines::sep::close::curly;
     }
 
     static bool is_string(const std::string& __value) {
@@ -140,8 +140,7 @@ namespace utils{
     }
 
     static bool is_container(const std::string& __value) {
-        return ((__value.front() == defines::sep::open::square && __value.back() == defines::sep::close::square) ||
-                (__value.front() == defines::sep::open::curly && __value.back() == defines::sep::close::curly));
+        return (__value.front() == defines::sep::open::curly && __value.back() == defines::sep::close::curly);
     }
 
     static bool is_bool(const std::string& __value) {

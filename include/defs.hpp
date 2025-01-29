@@ -10,13 +10,11 @@ namespace defines {
 
         namespace open {
             inline static constexpr auto paren  = '(';
-            inline static constexpr auto square = '[';
             inline static constexpr auto curly  = '{';
         }
 
         namespace close {
             inline static constexpr auto paren  = ')';
-            inline static constexpr auto square = ']';
             inline static constexpr auto curly  = '}';
         }
 
@@ -27,15 +25,11 @@ namespace defines {
         inline static constexpr auto comment    = '#';
 
         static bool is_open(const char& ch) {
-            return (ch == open::paren ||
-                    ch == open::square ||
-                    ch == open::curly);
+            return (ch == open::paren || ch == open::curly);
         }
 
         static bool is_close(const char& ch) {
-            return (ch == close::paren ||
-                    ch == close::square ||
-                    ch == close::curly);
+            return (ch == close::paren || ch == close::curly);
         }
 
     }
@@ -80,8 +74,8 @@ namespace defines {
         }
 
         namespace time {
-            inline static constexpr auto cur_date        = "текущая_дата";
-            inline static constexpr auto cur_time        = "текущее_время";
+            inline static constexpr auto cur_date = "текущая_дата";
+            inline static constexpr auto cur_time = "текущее_время";
         }
 
         namespace file {
@@ -99,37 +93,26 @@ namespace defines {
         namespace folder {
             inline static constexpr auto newfolder  = "новая_папка"; 
             inline static constexpr auto remfolder  = "удалить_папку"; 
+            inline static constexpr auto movefolder  = "переместить_папку";  
         }
 
         namespace container {
             
-            namespace array {
-                inline static constexpr auto append = "добавление_в_массив";
-                inline static constexpr auto remove = "удаление_из_массива";
-                inline static constexpr auto get_element = "получения_элемента";
-                inline static constexpr auto contains = "содержание_элемента";
-                inline static constexpr auto length = "длина_массива";
-                inline static constexpr auto reserve = "обратный_массив";
-                inline static constexpr auto clear = "очищение_массива";
-                inline static constexpr auto pop = "удаление_элемента";
-                inline static constexpr auto sort = "сортировка_массива";
-            }
-            
-            namespace string {
-                inline static constexpr auto add            = "сложить_строки";
-                inline static constexpr auto substring      = "найти_подстроку";
-                inline static constexpr auto lenght         = "длина_строки";
-                inline static constexpr auto find_string    = "найти_строку";
-                inline static constexpr auto find_char      = "найти_символ";
-            }
+        }
 
+        namespace string {
+            inline static constexpr auto add            = "сложить_строки";
+            inline static constexpr auto substring      = "найти_подстроку";
+            inline static constexpr auto lenght         = "длина_строки";
+            inline static constexpr auto find_string    = "найти_строку";
+            inline static constexpr auto find_char      = "найти_символ";
         }
 
 
         namespace flow { // stream
             // inline static constexpr auto __if  = "если";
             inline static constexpr auto loop = "цикл";
-            // inline static constexpr auto __while = "";
+            inline static constexpr auto repeat = "повторять";
         }
 
 

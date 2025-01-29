@@ -34,7 +34,7 @@ void Lexer::tokenize() {
             while((cur_char = this->source[++i]) != '\n');
         }
 
-        // array
+        // container
         if(utils::is_container__open(cur_char)) {
             container_stack.push(cur_char);
             temp_string += cur_char;

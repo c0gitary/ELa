@@ -9,11 +9,7 @@ void Interpreter::__execute_function(const Function &func) {
         (__it->second)(this->state);
     }
 }
-
-void Interpreter::__try_add_var(const Function &func){
-
-}
-
+    
 Interpreter::Interpreter(const std::vector<Function> &fn) {
     this->temp_functions = fn;
     this->functions = builtins::__builtins;
