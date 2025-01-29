@@ -70,7 +70,7 @@ struct State {
     }
 
 
-    Variable get_value(const std::string& name) noexcept {
+    Variable get_var(const std::string& name) noexcept {
         return this->vars[name];
     }
 
@@ -78,6 +78,13 @@ struct State {
         return this->vars.contains(name);
     }
 
+    std::string get_func_new_var() noexcept {
+        std::string __str_func = "";
+        for(const auto& [nameVar, Var] : this->vars){
+            __str_func += ("новая_переменная(" + nameVar + "," + Var.value + ");");
+        }
+        return __str_func;
+    }
 
 private:
     std::unordered_map<std::string, Variable> vars;

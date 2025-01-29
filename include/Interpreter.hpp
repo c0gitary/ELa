@@ -3,7 +3,6 @@
 #include "typedefs.hpp"
 #include "defs.hpp"
 #include "operator.hpp"
-#include "builtins.hpp"
 #include "utils.hpp"
 
 #include <functional>
@@ -16,10 +15,14 @@ class Interpreter {
     State state;
 
     void __execute_function(const Function& func);
+    void __try_add_var(const Function& func);
 
 public:
     explicit Interpreter(const std::vector<Function>& fn);
 
     void execute();
 };
+
+#include "builtins.hpp"
+
 

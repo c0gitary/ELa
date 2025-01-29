@@ -115,17 +115,6 @@ namespace utils{
         return param.type == Parameter::Type::STRING;
     }
 
-    static std::string extract_content(const std::string& __str) {
-        if(__str.size() < 2 || __str.front() != defines::sep::quote || __str.back() != defines::sep::quote)
-            return __str;
-        return __str.substr(1ULL, __str.size() - 2ULL);
-    }
-
-    static std::string add_quotes(const std::string& __str) {
-        return defines::sep::quote + __str + defines::sep::quote;
-    }
-
-
     static bool is_sep(const char& ch) {
         return (defines::sep::is_open(ch) || defines::sep::is_close(ch) || ch == defines::sep::comma);
     }
@@ -159,5 +148,19 @@ namespace utils{
         return (__value == defines::keywords::logic::__true || __value == defines::keywords::logic::__false);
     }
 
+    static std::string extract_content(const std::string& __str) {
+        if(__str.size() < 2 || __str.front() != defines::sep::quote || __str.back() != defines::sep::quote)
+            return __str;
+        return __str.substr(1ULL, __str.size() - 2ULL);
+    }
 
+    static std::string unpack(const std::string& __container) {
+        if(is_container(__container)) 
+            return __container.substr(1ULL, __container.size() - 2ULL);
+        throw std::runtime_error("ERROR: Unpack container");
+    }
+
+    static std::string add_quotes(const std::string& __str) {
+        return defines::sep::quote + __str + defines::sep::quote;
+    }
 }

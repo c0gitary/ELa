@@ -1,9 +1,8 @@
 #pragma once
 
-#include "typedefs.hpp"
-#include "utils.hpp"
-#include "defs.hpp"
-#include "operator.hpp"
+#include "Lexer.hpp"
+#include "Parser.hpp"
+#include "Interpreter.hpp"
 
 #include <iostream>
 #include <functional>
@@ -43,11 +42,6 @@ namespace builtins {
         static void remfolder(State&);
     }
 
-    namespace string {
-        static void concat(State&);
-        static void substring(State&);
-        static void lenght(State&);
-    }
 
     namespace time {
         static void current_date(State&);
@@ -82,6 +76,32 @@ namespace builtins {
 
     }
 
+    namespace container {
+
+        namespace array {
+            static void append(State&);
+            static void remove(State&);
+            static void get_element(State&);
+            static void contains(State&);
+            static void length(State&);
+            static void reserve(State&);
+            static void clear(State&);
+            static void pop(State&);
+            static void sort(State&);
+        }
+
+        namespace string {
+            static void concat(State&);
+            static void substring(State&);
+            static void lenght(State&);
+        }
+        
+    }
+
+    namespace flow {
+        static void loop(State&);
+    }
+
     inline static std::unordered_map<std::string, std::function<void(State&)>> __builtins {
         {defines::builtins::internal::new_var,   internal::new_var},
         {defines::builtins::internal::rem_var,   internal::remove_var},
@@ -91,9 +111,9 @@ namespace builtins {
         {defines::builtins::io::output, io::print},
         {defines::builtins::io::pause, io::pause},
 
-        {defines::builtins::string::add, string::concat},
-        {defines::builtins::string::lenght, string::lenght},
-        {defines::builtins::string::substring, string::substring},
+        {defines::builtins::container::string::add, container::string::concat},
+        {defines::builtins::container::string::lenght, container::string::lenght},
+        {defines::builtins::container::string::substring, container::string::substring},
 
         {defines::builtins::time::cur_date, time::current_date},
         {defines::builtins::time::cur_time, time::current_time},
@@ -120,28 +140,44 @@ namespace builtins {
         {defines::builtins::math::round, math::round},
         {defines::builtins::math::l_and, math::l_and},
         {defines::builtins::math::l_or, math::l_or},
-        {defines::builtins::math::fact, math::factorial}
+        {defines::builtins::math::fact, math::factorial},
+
+        {defines::builtins::flow::loop, flow::loop}
     };
 
 }
 
+inline void builtins::flow::loop(State& s){
+    if(s.params.size() == 4 && utils::is_container(s.params[3].name)){
+        const int start = (utils::is_id_param(s.params[0]) ? std::stoi(s.get_var(s.params[0].name).value) : std::stoi(s.params[0].name));
+        const int end   = (utils::is_id_param(s.params[1]) ? std::stoi(s.get_var(s.params[1].name).value) : std::stoi(s.params[1].name));
+        const int step  = (utils::is_id_param(s.params[2]) ? std::stoi(s.get_var(s.params[2].name).value) : std::stoi(s.params[2].name));
 
+        Lexer __loopLexer(utils::unpack(s.params[3].name));
+        __loopLexer.tokenize();
+        Parser __loopParser(__loopLexer.get_tokens());
+        Interpreter __loopInterpreter(__loopParser.get_functions());
+
+        for(int i = start; i < end; i += step){
+            __loopInterpreter.execute();
+        }
+    
+        return;
+    }
+    throw std::runtime_error("FLOW::LOOP -> Invalid args");
+}
 
 inline void builtins::internal::new_var(State & s) {
     if(s.params.size() == 2) {
         const auto ty_var = utils::get_type_param(s.params[1]);
         if(ty_var != Variable::Type::IDENTIFIER)
-            s.set_var(
-                ty_var,
-                s.params[0].name,
-                s.params[1].name
-            );
+            s.set_var(ty_var, s.params[0].name, s.params[1].name);
         else {
             if(s.contains(s.params[1].name)) {
                 s.set_var(
-                    s.get_value(s.params[1].name).type,
+                    s.get_var(s.params[1].name).type,
                     s.params[0].name,
-                    s.get_value(s.params[1].name).value
+                    s.get_var(s.params[1].name).value
                 );
             }
             else {
@@ -167,8 +203,14 @@ inline void builtins::internal::remove_var(State& s) {
 
 inline void builtins::io::print(State & s) {
     for(std::size_t i{}; i < s.params.size(); i++) {
-        const auto str = (utils::is_id_param(s.params[i]) ? s.get_value(s.params[i].name).value : utils::extract_content(s.params[i].name));
-        std::cout << str << ' ';
+        const auto str = (utils::is_id_param(s.params[i]) ? s.get_var(s.params[i].name).value : utils::extract_content(s.params[i].name));
+        bool is_cont = false;
+        if(utils::is_container__open(str)){
+            
+        }
+        else {
+            std::cout << std << ' ';
+        }
     }
     std::cout << std::endl;
 }
@@ -193,27 +235,29 @@ inline void builtins::io::clear(State &) {
 
 inline void builtins::folder::newfolder(State &s) {
     if(s.params.size() == 1){
-        std::filesystem::create_directory(std::string(utils::is_id_param(s.params[0]) ? s.get_value(s.params[0].name).value : s.params[0].name).c_str());
+        const std::string __folderName = utils::extract_content(utils::is_id_param(s.params[0]) ? s.get_var(s.params[0].name).value : s.params[0].name);
+        std::filesystem::create_directory(__folderName.c_str());
     }
 }
 
 inline void builtins::folder::remfolder(State &s) {
     if(s.params.size() == 1){
-        std::filesystem::remove_all(std::string(utils::is_id_param(s.params[0]) ? s.get_value(s.params[0].name).value : s.params[0].name).c_str());
+        const std::string __folderName = utils::extract_content(utils::is_id_param(s.params[0]) ? s.get_var(s.params[0].name).value : s.params[0].name);
+        std::filesystem::remove_all(__folderName.c_str());
     }
 }
 
 inline void builtins::file::create(State &s) {
     if(s.params.size() == 1){
-        std::ofstream((utils::is_id_param(s.params[0]) ? s.get_value(s.params[0].name).value : s.params[0].name));
+        std::ofstream(utils::extract_content((utils::is_id_param(s.params[0]) ? s.get_var(s.params[0].name).value : s.params[0].name)));
     }
 }
 
 inline void builtins::file::write(State &s) {
     if(s.params.size() == 2){
-        const std::string content = (utils::is_id_param(s.params[1]) ? s.get_value(s.params[1].name).value : s.params[1].name);
-        const std::string nameFile = (utils::is_id_param(s.params[0]) ? s.get_value(s.params[0].name).value :  s.params[0].name);
-        std::ofstream file(nameFile);
+        const std::string content = (utils::is_id_param(s.params[1]) ? s.get_var(s.params[1].name).value : s.params[1].name);
+        const std::string nameFile = (utils::is_id_param(s.params[0]) ? s.get_var(s.params[0].name).value :  s.params[0].name);
+        std::ofstream file(utils::extract_content(nameFile));
         file << utils::extract_content(content);
         file.close();
     }
@@ -221,32 +265,32 @@ inline void builtins::file::write(State &s) {
 
 inline void builtins::file::add(State &s) {
     if(s.params.size() == 2){
-        const std::string content = (utils::is_id_param(s.params[1]) ? s.get_value(s.params[1].name).value : s.params[1].name);
-        const std::string nameFile = (utils::is_id_param(s.params[0]) ? s.get_value(s.params[0].name).value :  s.params[0].name);
-        std::ofstream file(nameFile, std::ios::app);
-        file << content;
+        const std::string content = (utils::is_id_param(s.params[1]) ? s.get_var(s.params[1].name).value : s.params[1].name);
+        const std::string nameFile = (utils::is_id_param(s.params[0]) ? s.get_var(s.params[0].name).value :  s.params[0].name);
+        std::ofstream file(utils::extract_content(nameFile), std::ios::app);
+        file << utils::extract_content(content);
         file.close();
     }
 }
 
 inline void builtins::file::remove(State &s) {
     for(std::size_t i = 0; i < s.params.size(); i++){
-        std::filesystem::remove(std::string(utils::is_id_param(s.params[i]) ? s.get_value(s.params[i].name).value : s.params[i].name).c_str());
+        std::filesystem::remove(utils::extract_content((utils::is_id_param(s.params[i]) ? s.get_var(s.params[i].name).value : s.params[i].name)));
     }
 }
 
 inline void builtins::file::move(State &s) {
     if(s.params.size() == 2){
-        const std::string filePath1 = (utils::is_id_param(s.params[0]) ? s.get_value(s.params[0].name).value :  s.params[0].name);
-        const std::string filePath2 = (utils::is_id_param(s.params[1]) ? s.get_value(s.params[1].name).value : s.params[1].name);
-        std::filesystem::rename(filePath1, filePath2);
+        const std::string filePath1 = (utils::is_id_param(s.params[0]) ? s.get_var(s.params[0].name).value :  s.params[0].name);
+        const std::string filePath2 = (utils::is_id_param(s.params[1]) ? s.get_var(s.params[1].name).value : s.params[1].name);
+        std::filesystem::rename(utils::extract_content(filePath1), utils::extract_content(filePath2));
     }
 }
 
 inline void builtins::file::copy(State &s) {
     if(s.params.size() == 2){
-        const std::string filePath1 = (utils::is_id_param(s.params[0]) ? s.get_value(s.params[0].name).value :  s.params[0].name);
-        const std::string filePath2 = (utils::is_id_param(s.params[1]) ? s.get_value(s.params[1].name).value : s.params[1].name);
+        const std::string filePath1 = (utils::is_id_param(s.params[0]) ? s.get_var(s.params[0].name).value :  s.params[0].name);
+        const std::string filePath2 = (utils::is_id_param(s.params[1]) ? s.get_var(s.params[1].name).value : s.params[1].name);
         std::filesystem::copy(filePath1, filePath2);
     }
 }
@@ -259,7 +303,7 @@ inline void builtins::string::concat(State &s) {
                 Variable::Type::STRING,
                 s.params[0].name,
                 utils::add_quotes(
-                    utils::extract_content(s.get_value(s.params[1].name).value) + utils::extract_content(s.get_value(s.params[2].name).value)
+                    utils::extract_content(s.get_var(s.params[1].name).value) + utils::extract_content(s.get_var(s.params[2].name).value)
                 )
             );
             return;
@@ -271,7 +315,7 @@ inline void builtins::string::concat(State &s) {
 
 inline void builtins::string::lenght(State &s) {
     if(s.params.size() == 2 && utils::is_id_param(s.params[0])) {
-        const std::string val = (s.contains(s.params[1].name) ? s.get_value(s.params[1].name).value : s.params[1].name);
+        const std::string val = (s.contains(s.params[1].name) ? s.get_var(s.params[1].name).value : s.params[1].name);
         s.set_var(
             Variable::Type::INT,
             s.params[0].name,
@@ -287,15 +331,15 @@ inline void builtins::string::lenght(State &s) {
 inline void builtins::string::substring(State &s) {
     if (s.params.size() == 4 && utils::is_id_param(s.params[0])) {
 
-        if (s.contains(s.params[1].name) && s.get_value(s.params[1].name).type == Variable::Type::STRING) {
-            const std::string value = s.get_value(s.params[1].name).value;
+        if (s.contains(s.params[1].name) && s.get_var(s.params[1].name).type == Variable::Type::STRING) {
+            const std::string value = s.get_var(s.params[1].name).value;
             const std::string content = utils::extract_content(value);
 
-            if (s.contains(s.params[2].name) && s.get_value(s.params[2].name).type == Variable::Type::INT) {
-                const int start_pos = std::stoi(s.get_value(s.params[2].name).value);
+            if (s.contains(s.params[2].name) && s.get_var(s.params[2].name).type == Variable::Type::INT) {
+                const int start_pos = std::stoi(s.get_var(s.params[2].name).value);
 
-                if (s.contains(s.params[3].name) && s.get_value(s.params[3].name).type == Variable::Type::INT) {
-                    const int length = std::stoi(s.get_value(s.params[3].name).value);
+                if (s.contains(s.params[3].name) && s.get_var(s.params[3].name).type == Variable::Type::INT) {
+                    const int length = std::stoi(s.get_var(s.params[3].name).value);
 
                     if (start_pos >= 0 && start_pos < content.length() && length >= 0 && start_pos + length <= content.length()) {
                         const std::string substring = content.substr(start_pos, length);
@@ -404,7 +448,7 @@ inline void builtins::math::factorial(State &s) {
 
 inline void builtins::math::round(State &s) {
     if(s.params.size() == 2 && utils::is_id_param(s.params[0])){
-        const Variable var = (utils::is_id_param(s.params[1]) ? s.get_value(s.params[1].name) : utils::set_anon_number(s.params[1].name));
+        const Variable var = (utils::is_id_param(s.params[1]) ? s.get_var(s.params[1].name) : utils::set_anon_number(s.params[1].name));
         s.set_var(
             Variable::Type::INT,
             s.params[0].name,
@@ -420,8 +464,8 @@ inline void builtins::math::round(State &s) {
 template<class T, class U, template <class> class Op>
 void builtins::math::binary_op(State& s) {
     if(s.params.size() == 3 && utils::is_id_param(s.params[0])) {
-        const Variable right = (utils::is_id_param(s.params[1]) ? s.get_value(s.params[1].name) : utils::set_anon_number(s.params[1].name));
-        const Variable left = (utils::is_id_param(s.params[2]) ? s.get_value(s.params[2].name) : utils::set_anon_number(s.params[2].name));
+        const Variable right = (utils::is_id_param(s.params[1]) ? s.get_var(s.params[1].name) : utils::set_anon_number(s.params[1].name));
+        const Variable left = (utils::is_id_param(s.params[2]) ? s.get_var(s.params[2].name) : utils::set_anon_number(s.params[2].name));
         const Variable::Type type = (right.type > left.type ? right.type : left.type);
         std::string res;
 
@@ -451,8 +495,8 @@ void builtins::math::binary_op(State& s) {
 template<template <class> class Op>
 void builtins::math::math_func(State &s) {
     if(s.params.size() == 3 && utils::is_id_param(s.params[0])) {
-        const Variable right = (utils::is_id_param(s.params[1]) ? s.get_value(s.params[1].name) : utils::set_anon_number(s.params[1].name));
-        const Variable left = (utils::is_id_param(s.params[2]) ? s.get_value(s.params[2].name) : utils::set_anon_number(s.params[2].name));
+        const Variable right = (utils::is_id_param(s.params[1]) ? s.get_var(s.params[1].name) : utils::set_anon_number(s.params[1].name));
+        const Variable left = (utils::is_id_param(s.params[2]) ? s.get_var(s.params[2].name) : utils::set_anon_number(s.params[2].name));
         const Variable::Type type = (right.type > left.type ? right.type : left.type);
         std::string res;
 
@@ -477,7 +521,7 @@ void builtins::math::math_func(State &s) {
 template<class T, template <class> class Op>
 void builtins::math::math_func_one_arg(State& s){
     if(s.params.size() == 2 && utils::is_id_param(s.params[0])) {
-        const Variable var = (utils::is_id_param(s.params[1]) ? s.get_value(s.params[1].name) : utils::set_anon_number(s.params[1].name));
+        const Variable var = (utils::is_id_param(s.params[1]) ? s.get_var(s.params[1].name) : utils::set_anon_number(s.params[1].name));
         const Variable::Type type = (var.type == Variable::Type::FLOAT ? Variable::Type::FLOAT : Variable::Type::INT);
         std::string res;
 
