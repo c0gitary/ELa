@@ -88,7 +88,7 @@ namespace builtins {
 
     namespace flow {
         static void loop(State&);
-        // static void repeat(State&);
+        static void repeat(State&);
     }
 
     inline static std::unordered_map<std::string, std::function<void(State&)>> __builtins {
@@ -131,7 +131,8 @@ namespace builtins {
         {defines::builtins::math::l_or, math::l_or},
         {defines::builtins::math::fact, math::factorial},
 
-        {defines::builtins::flow::loop, flow::loop}
+        {defines::builtins::flow::loop, flow::loop},
+        {defines::builtins::flow::repeat, flow::repeat}
     };
 
 }
@@ -156,7 +157,23 @@ inline void builtins::flow::loop(State& s){
     throw std::runtime_error("FLOW::LOOP -> Invalid args");
 }
 
+inline void builtins::flow::repeat(State& s){
+    if(s.params.size() == 2 && utils::is_container(s.params[1].name)){
+        const int count = (utils::is_id_param(s.params[0]) ? std::stoi(s.get_var(s.params[0].name).value) : std::stoi(s.params[0].name));
+        if(count < 0)
+            throw std::runtime_error("FLOW::REPEAT -> Negative count");
 
+        Lexer __repeatLexer(utils::unpack(s.params[1].name));
+        __repeatLexer.tokenize();
+        Parser __repeatParser(__repeatLexer.get_tokens());
+        Interpreter __repeatInterpreter(__repeatParser.get_functions());
+        
+        for(unsigned i = 0; i < count; ++i)
+            __repeatInterpreter.execute();
+        return;
+    }
+    throw std::runtime_error("FLOW::REPEAT -> Invalid args");
+}
 
 inline void builtins::internal::new_var(State & s) {
     if(s.params.size() == 2) {
