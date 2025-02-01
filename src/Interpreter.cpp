@@ -1,4 +1,4 @@
-#include "../include/Interpreter.hpp"
+#include "include/Interpreter.hpp"
 
 inline static std::unordered_map<std::string, std::function<void(State&)>> __builtins;
 

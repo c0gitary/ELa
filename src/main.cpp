@@ -1,8 +1,9 @@
-#include "../include/Lexer.hpp"
-#include "../include/Parser.hpp"
-#include "../include/Interpreter.hpp"
+#include "include/Lexer.hpp"
+#include "include/Parser.hpp"
+#include "include/Interpreter.hpp"
 
 #include <windows.h>
+#include <exception>
 
 int main(int argc, char** argv) {
     SetConsoleOutputCP(CP_UTF8);
@@ -13,16 +14,13 @@ int main(int argc, char** argv) {
         Lexer lex(utils::file_to_str(path));
         lex.tokenize();
         // lex.print_tokens();
-        std::cout << std::endl;
-        const auto tokens = lex.get_tokens();
 
-        Parser parser(tokens);
-        const auto functions = parser.get_functions();
-        // parser.print_functions(functions);
+        Parser parser(lex.get_tokens());
 
-        Interpreter interpreter(functions);
+        Interpreter interpreter(parser.get_functions());
         interpreter.execute();
-    } catch(const std::exception& e) {
+
+    } catch(const std::runtime_error& e) {
         std::cerr << e.what() << std::endl;
     }
 

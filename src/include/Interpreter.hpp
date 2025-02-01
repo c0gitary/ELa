@@ -1,9 +1,9 @@
 #pragma once
 
-#include "typedefs.hpp"
-#include "defs.hpp"
-#include "operator.hpp"
-#include "utils.hpp"
+#include "tools/typedefs.hpp"
+#include "tools/defs.hpp"
+#include "tools/operator.hpp"
+#include "tools/utils.hpp"
 
 #include <functional>
 #include <unordered_map>
@@ -22,6 +22,6 @@ public:
     void execute();
 };
 
-#include "builtins.hpp"
+#include "tools/builtins.hpp"
 
 

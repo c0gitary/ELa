@@ -76,7 +76,21 @@ struct State {
         return global_variables[name];
     }
 
+
     bool contains(const std::string& name) const noexcept {
         return global_variables.contains(name);
     }
+};
+
+namespace ErrorType {
+    
+    // enum class Lexer{};
+    
+    enum class Parser {
+        EXPECTED_CHAR,
+        EXPECTED_ID,
+        UNKNOWN_TYPE
+    };
+
+    // enum class Runtime {};
 };

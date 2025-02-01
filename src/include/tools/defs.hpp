@@ -118,5 +118,22 @@ namespace defines {
 
     }
 
+    namespace errors {
+
+        namespace lexer {
+            
+        }
+
+        namespace parser {
+            inline static constexpr auto expected_char = "Ожидается символ";
+            inline static constexpr auto expected_id = "Ожидается идентификатор";
+            inline static constexpr auto unknown_type = "Неизвестный тип данных";
+        }
+
+        namespace runtime {
+            
+        }
+
+    }
 
 }

@@ -1,4 +1,4 @@
-#include "../include/Parser.hpp"
+#include "include/Parser.hpp"
 
 std::string Parser::parse_id() {
     if(this->cur_token < this->tokens.size() && this->tokens[this->cur_token].type == Token::Type::IDENTIFIER) {

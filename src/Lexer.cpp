@@ -1,4 +1,4 @@
-#include "../include/Lexer.hpp"
+#include "include/Lexer.hpp"
 
 void Lexer::add_token(const Token::Type &ty, const std::string &str) {
     this->tokens.push_back({

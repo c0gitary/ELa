@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Lexer.hpp"
-#include "Parser.hpp"
-#include "Interpreter.hpp"
+#include "../Lexer.hpp"
+#include "../Parser.hpp"
+#include "../Interpreter.hpp"
 
 #include <iostream>
 #include <functional>
@@ -109,7 +109,7 @@ namespace builtins {
 
         {defines::builtins::file::create, file::create},
         // {defines::builtins::file::open, file::open},
-        // {defines::builtins::file::read, file::read},
+        {defines::builtins::file::read, file::read},
         {defines::builtins::file::write, file::write},
         {defines::builtins::file::add, file::add},
         {defines::builtins::file::move, file::move},
@@ -138,20 +138,25 @@ namespace builtins {
 }
 
 inline void builtins::flow::loop(State& s){
-    if(s.params.size() == 4 && utils::is_container(s.params[3].name)){
-        const int start = (utils::is_id_param(s.params[0]) ? std::stoi(s.get_var(s.params[0].name).value) : std::stoi(s.params[0].name));
-        const int end   = (utils::is_id_param(s.params[1]) ? std::stoi(s.get_var(s.params[1].name).value) : std::stoi(s.params[1].name));
-        const int step  = (utils::is_id_param(s.params[2]) ? std::stoi(s.get_var(s.params[2].name).value) : std::stoi(s.params[2].name));
+    if(s.params.size() == 5 && utils::is_container(s.params[4].name) && utils::is_id_param(s.params[0])){
+        const int start = (utils::is_id_param(s.params[1]) ? std::stoi(s.get_var(s.params[0].name).value) : std::stoi(s.params[1].name));
+        const int end   = (utils::is_id_param(s.params[2]) ? std::stoi(s.get_var(s.params[1].name).value) : std::stoi(s.params[2].name));
+        const int step  = (utils::is_id_param(s.params[3]) ? std::stoi(s.get_var(s.params[2].name).value) : std::stoi(s.params[3].name));
 
-        Lexer __loopLexer(utils::unpack(s.params[3].name));
+        Lexer __loopLexer(utils::unpack(s.params[4].name));
         __loopLexer.tokenize();
         Parser __loopParser(__loopLexer.get_tokens());
         Interpreter __loopInterpreter(__loopParser.get_functions());
 
         for(int i = start; i < end; i += step){
+            s.set_var(
+                Variable::Type::INT,
+                s.params[0].name,
+                std::to_string(i)
+            );
             __loopInterpreter.execute();
         }
-    
+        s.rem_var(s.get_var(s.params[0].name));
         return;
     }
     throw std::runtime_error("FLOW::LOOP -> Invalid args");
@@ -223,7 +228,7 @@ inline void builtins::io::input(State &s) {
         s.set_var(Variable::Type::STRING, s.params[0].name, __input);
         return;
     }
-    throw std::runtime_error("IO::INPUT -> Count params != 2");
+    throw std::invalid_argument("IO::INPUT -> Count params != 2");
 }
 
 inline void builtins::io::pause(State &) {
@@ -254,6 +259,21 @@ inline void builtins::file::create(State &s) {
     }
 }
 
+inline void builtins::file::read(State &s) {
+    if(s.params.size() == 2 && utils::is_id_param(s.params[0])) {
+        const std::string fileName = (utils::is_id_param(s.params[1]) ? s.get_var(s.params[1].name).value : s.params[1].name);
+        if(std::ifstream file(utils::extract_content(fileName)); file.is_open()) {
+            std::string str;
+            while(std::getline(file, str)){}
+            s.set_var(Variable::Type::STRING, s.params[0].name, str);
+            file.close();
+            return;
+        }
+        throw std::runtime_error("FILE::READ -> File not opening");
+    }
+    throw std::runtime_error("FILE::READ -> Invalid args");
+}
+
 inline void builtins::file::write(State &s) {
     if(s.params.size() == 2){
         const std::string content = (utils::is_id_param(s.params[1]) ? s.get_var(s.params[1].name).value : s.params[1].name);
@@ -261,7 +281,9 @@ inline void builtins::file::write(State &s) {
         std::ofstream file(utils::extract_content(nameFile));
         file << utils::extract_content(content);
         file.close();
+        return;
     }
+    throw std::invalid_argument("FILE::WRITE -> Invalid args");
 }
 
 inline void builtins::file::add(State &s) {
@@ -271,7 +293,9 @@ inline void builtins::file::add(State &s) {
         std::ofstream file(utils::extract_content(nameFile), std::ios::app);
         file << utils::extract_content(content);
         file.close();
+        return;
     }
+    throw std::invalid_argument("FILE::ADD -> Invalid args");
 }
 
 inline void builtins::file::remove(State &s) {
