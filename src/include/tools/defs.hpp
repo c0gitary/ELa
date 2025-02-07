@@ -124,13 +124,14 @@ namespace defines {
         }
 
         namespace parser {
-            __DEF__(__this__, "[Синтаксческая ошибка]");
+            __DEF__(__this__, "[Ошибка синтаксиса]");
             __DEF__(expected_char, "Ожидается символ");
             __DEF__(expected_id, "Ожидается тип токена: 'идентификатор'");
             __DEF__(unknown_type, "Неизвестный тип токена");
         }
 
         namespace runtime {
+            __DEF__(__this__, "[Ошибка выполнения]");
         }
     }
 }

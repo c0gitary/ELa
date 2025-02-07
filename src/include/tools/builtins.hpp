@@ -161,14 +161,14 @@ inline void builtins::flow::loop(State& s){
         s.rem_var(s.get_var(s.params[0].name));
         return;
     }
-    throw std::runtime_error("FLOW::LOOP -> Invalid args");
+    return error::ThrowRuntime::error(defines::builtins::flow::loop, "Неверные кол-во параметров");
 }
 
 inline void builtins::flow::repeat(State& s){
     if(s.params.size() == 2 && utils::is_container(s.params[1].name)){
         const int count = (utils::is_id_param(s.params[0]) ? std::stoi(s.get_var(s.params[0].name).value) : std::stoi(s.params[0].name));
         if(count < 0)
-            throw std::runtime_error("FLOW::REPEAT -> Negative count");
+            return error::ThrowRuntime::error(defines::builtins::flow::repeat, "Кол-во повторений не может быть отрициательное");
 
         Lexer __repeatLexer(utils::unpack(s.params[1].name));
         __repeatLexer.tokenize();
@@ -179,7 +179,7 @@ inline void builtins::flow::repeat(State& s){
             __repeatInterpreter.execute();
         return;
     }
-    throw std::runtime_error("FLOW::REPEAT -> Invalid args");
+    return error::ThrowRuntime::error(defines::builtins::flow::repeat, "Неверные кол-во параметров");
 }
 
 inline void builtins::internal::new_var(State & s) {
@@ -205,7 +205,7 @@ inline void builtins::internal::new_var(State & s) {
         }
         return;
     }
-    throw std::runtime_error("INTERNAL::NEW_VAR -> Invalid args");
+    return error::ThrowRuntime::error(defines::builtins::internal::new_var, "Неверные кол-во параметров");
 }
 
 inline void builtins::internal::remove_var(State& s) { 
@@ -233,7 +233,7 @@ inline void builtins::io::input(State &s) {
         s.set_var(Variable::Type::STRING, s.params[0].name, __input);
         return;
     }
-    throw std::invalid_argument("IO::INPUT -> Count params != 2");
+    return error::ThrowRuntime::error(defines::builtins::io::input, "Неверные кол-во параметров");
 }
 
 inline void builtins::io::pause(State &) {
@@ -248,20 +248,26 @@ inline void builtins::folder::newfolder(State &s) {
     if(s.params.size() == 1){
         const std::string __folderName = utils::extract_content(utils::is_id_param(s.params[0]) ? s.get_var(s.params[0].name).value : s.params[0].name);
         std::filesystem::create_directory(__folderName.c_str());
+        return;
     }
+    return error::ThrowRuntime::error(defines::builtins::folder::newfolder, "Неверные кол-во параметров");
 }
 
 inline void builtins::folder::remfolder(State &s) {
     if(s.params.size() == 1){
         const std::string __folderName = utils::extract_content(utils::is_id_param(s.params[0]) ? s.get_var(s.params[0].name).value : s.params[0].name);
         std::filesystem::remove_all(__folderName.c_str());
+        return;
     }
+    return error::ThrowRuntime::error(defines::builtins::folder::remfolder, "Неверные кол-во параметров");
 }
 
 inline void builtins::file::create(State &s) {
     if(s.params.size() == 1){
         std::ofstream(utils::extract_content((utils::is_id_param(s.params[0]) ? s.get_var(s.params[0].name).value : s.params[0].name)));
+        return;
     }
+    return error::ThrowRuntime::error(defines::builtins::file::create, "Неверные кол-во параметров");
 }
 
 inline void builtins::file::read(State &s) {
@@ -274,9 +280,9 @@ inline void builtins::file::read(State &s) {
             file.close();
             return;
         }
-        throw std::runtime_error("FILE::READ -> File not opening");
+        return error::ThrowRuntime::error(defines::builtins::file::read, "Файл недоступен");
     }
-    throw std::runtime_error("FILE::READ -> Invalid args");
+    return error::ThrowRuntime::error(defines::builtins::file::read, "Неверные кол-во параметров");
 }
 
 inline void builtins::file::write(State &s) {
@@ -288,7 +294,7 @@ inline void builtins::file::write(State &s) {
         file.close();
         return;
     }
-    throw std::invalid_argument("FILE::WRITE -> Invalid args");
+    return error::ThrowRuntime::error(defines::builtins::file::write, "Неверные кол-во параметров");
 }
 
 inline void builtins::file::add(State &s) {
@@ -300,7 +306,7 @@ inline void builtins::file::add(State &s) {
         file.close();
         return;
     }
-    throw std::invalid_argument("FILE::ADD -> Invalid args");
+    return error::ThrowRuntime::error(defines::builtins::file::add, "Неверные кол-во параметров");
 }
 
 inline void builtins::file::remove(State &s) {
@@ -344,9 +350,9 @@ inline void builtins::string::concat(State &s) {
             );
             return;
         }
-        throw std::runtime_error("STRING::CONCAT -> ID is not defined");
+        return error::ThrowRuntime::error(defines::builtins::string::add, "Идентификатор не определён");
     }
-    throw std::runtime_error("STRING::CONCAT -> Error");
+    return error::ThrowRuntime::error(defines::builtins::string::add, "Неверные кол-во параметров");
 }
 
 inline void builtins::string::lenght(State &s) {
@@ -359,8 +365,7 @@ inline void builtins::string::lenght(State &s) {
         );
         return;
     }
-
-    throw std::runtime_error("STRING::LENGHT -> Error");
+    return error::ThrowRuntime::error(defines::builtins::string::lenght, "Неверные кол-во параметров");
 }
 
 // подстрока(рез, строка, нач_поз_строки, длина_подстроки);
@@ -398,8 +403,7 @@ inline void builtins::string::substring(State &s) {
         }
         return;
     }
-
-    throw std::runtime_error("STRING::SUBSTRING -> Invalid arguments");
+    return error::ThrowRuntime::error(defines::builtins::string::substring, "Неверные кол-во параметров");
 }
 
 inline void builtins::time::current_date(State &s) {
@@ -417,7 +421,7 @@ inline void builtins::time::current_date(State &s) {
         );
         return;
     }
-    throw std::runtime_error("TIME::CUR_DATE -> Invalid args");
+    return error::ThrowRuntime::error(defines::builtins::time::cur_date, "Неверные кол-во параметров");
 }
 
 inline void builtins::time::current_time(State &s) {
@@ -435,7 +439,7 @@ inline void builtins::time::current_time(State &s) {
         );
         return;
     }
-    throw std::runtime_error("TIME::CUR_TIME -> Invalid args");
+    return error::ThrowRuntime::error(defines::builtins::time::cur_time, "Неверные кол-во параметров");
 }
 
 inline void builtins::math::mul(State &s) {
@@ -493,7 +497,7 @@ inline void builtins::math::round(State &s) {
         if(utils::is_anon_number(var)) s.rem_var(var);
         return;
     }
-    throw std::runtime_error("MATH::ROUND -> Invalid args");
+    return error::ThrowRuntime::error(defines::builtins::math::round, "Неверные кол-во параметров");
 }
 
 
@@ -525,7 +529,7 @@ void builtins::math::binary_op(State& s) {
 
         return;
     }
-    throw std::runtime_error("MATH::BINARY_OPERATION -> Invalid args");
+    return error::ThrowRuntime::error("Бинарная операция", "Неверные кол-во параметров");
 }
 
 template<template <class> class Op>
@@ -551,7 +555,7 @@ void builtins::math::math_func(State &s) {
         if(utils::is_anon_number(left)) s.rem_var(left);
         return;
     }
-    throw std::runtime_error("MATH::BINARY_OPERATION -> Invalid args");
+    return error::ThrowRuntime::error("Математическая функция", "Неверные кол-во параметров");
 }
 
 template<class T, template <class> class Op>
@@ -576,5 +580,5 @@ void builtins::math::math_func_one_arg(State& s){
         if(utils::is_anon_number(var)) s.rem_var(var);
         return;
     }
-    throw std::runtime_error("MATH::FUNC_ONE_ARG -> Invalid args");
+    return error::ThrowRuntime::error("Математическая функция одного аргумента", "Неверные кол-во параметров");
 }

@@ -36,7 +36,7 @@ namespace error {
     namespace ThrowParser {
         template<class __TempReturnType__>
         static __TempReturnType__ error_unknown_type(const std::string& cur_token_type) {
-            const std::string msgErr = std::format("{}: {}, текущий тип токен {}",
+            const std::string msgErr = std::format("{}: {}, текущий тип токена '{}'",
                 defines::errors::parser::__this__,
                 defines::errors::parser::expected_char,
                 cur_token_type
@@ -70,4 +70,14 @@ namespace error {
         }
     }
 
+
+    namespace ThrowRuntime {
+        static void error(const std::string&& err, const std::string&& msg) {
+            const std::string e = std::format("{}: ({}) --> {}",
+                defines::errors::runtime::__this__, err, msg
+            );
+            std::cerr << e << std::endl;
+            std::exit(1);
+        }
+    }
 }
