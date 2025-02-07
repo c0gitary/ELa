@@ -33,6 +33,19 @@ namespace utils{
     //     return (is_float ? Parameter::Type::FLOAT : Parameter::Type::INTEGER);
     // }
 
+    static std::string get_token_in_str(const Token::Type& type) {
+        switch(type) {
+            case Token::Type::END : return "Конечный символ";
+            case Token::Type::NUMBER : return "Число";
+            case Token::Type::STRING : return "Строка";
+            case Token::Type::CONTAINER : return "Контейнер";
+            case Token::Type::SEMICOLON : return "Точка с запятой";
+            case Token::Type::SEPARATOR : return "Разделитель";
+            case Token::Type::IDENTIFIER : return "Идентификатор";
+            default: return {};
+        }
+    }
+
     static std::string get_type_value(const Parameter::Type& type) {
         switch(type) {
             case Parameter::Type::IDENTIFIER: return "ИДЕНТИФИКАТОР"; break;
