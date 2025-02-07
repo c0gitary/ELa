@@ -82,9 +82,12 @@ struct State {
     }
 };
 
-namespace ErrorType {
+namespace error::type {
     
-    // enum class Lexer{};
+    enum class Main {
+        INVALID_ARGS,
+        INALID_EXT
+    };
     
     enum class Parser {
         EXPECTED_CHAR,

@@ -3,9 +3,10 @@
 #include "tools/typedefs.hpp"
 #include "tools/defs.hpp"
 #include "tools/utils.hpp"
+#include "Error.hpp"
 
-#include <stdexcept>
-#include <iostream>
+
+#include <format>
 
 class Parser {
     std::vector<Token> tokens;

@@ -1,139 +1,136 @@
 #pragma once
 
-namespace defines {
+#define __DEF__(ARG1, ARG2) inline static constexpr auto ARG1 = ARG2
 
+namespace defines {
     namespace __internal {
-        inline static constexpr auto anon_number = "__anon__number__";
+        __DEF__(anon_number, "__anon__number__");
     }
 
-    namespace sep { //separator
+    namespace sep {
+        //separator
 
         namespace open {
-            inline static constexpr auto paren  = '(';
-            inline static constexpr auto curly  = '{';
+            __DEF__(paren, '(');
+            __DEF__(curly, '{');
         }
 
         namespace close {
-            inline static constexpr auto paren  = ')';
-            inline static constexpr auto curly  = '}';
+            __DEF__(paren, ')');
+            __DEF__(curly, '}');
         }
 
-        inline static constexpr auto comma      = ',';
-        inline static constexpr auto dot        = '.';
-        inline static constexpr auto semicolon  = ';';
-        inline static constexpr auto quote      = '\"';
-        inline static constexpr auto comment    = '#';
+        __DEF__(comma, ',');
+        __DEF__(dot, '.');
+        __DEF__(semicolon, ';');
+        __DEF__(quote, '\"');
+        __DEF__(comment, '#');
 
-        static bool is_open(const char& ch) {
+        static bool is_open(const char &ch) {
             return (ch == open::paren || ch == open::curly);
         }
 
-        static bool is_close(const char& ch) {
+        static bool is_close(const char &ch) {
             return (ch == close::paren || ch == close::curly);
         }
-
     }
 
-    namespace keywords {
-    
-        namespace logic {
-            inline static constexpr auto __true  = "ИСТИННА";
-            inline static constexpr auto __false = "ЛОЖЬ";
-        }
-
+    namespace keywords::logic {
+        __DEF__(__true, "ИСТИНА");
+        __DEF__(__false, "ЛОЖЬ");
     }
 
-    namespace builtins { // default functions
+    namespace builtins {
+        // default functions
 
         namespace internal {
-            inline static constexpr auto new_var = "новая_переменная";
-            inline static constexpr auto rem_var = "удалить_переменную";
+            __DEF__(new_var, "новая_переменная");
+            __DEF__(rem_var, "удалить_переменную");
         }
 
-        namespace io { // input - output
-            inline static constexpr auto output = "вывод";
-            inline static constexpr auto input  = "ввод";
-            inline static constexpr auto clear  = "очистить_вывод";
-            inline static constexpr auto pause  = "пауза";
+        namespace io {
+            // input - output
+            __DEF__(output, "вывод");
+            __DEF__(input, "ввод");
+            __DEF__(clear, "очистить_вывод");
+            __DEF__(pause, "пауза");
+            __DEF__(new_line, "новая_строка");
         }
 
         namespace math {
-            inline static constexpr auto sum    = "сумма";
-            inline static constexpr auto sub    = "вычитание";
-            inline static constexpr auto mul    = "умножение";
-            inline static constexpr auto div    = "деление";
-            inline static constexpr auto mod    = "остаток_от_деления";
-            inline static constexpr auto log    = "логарифм";
-            inline static constexpr auto l_and  = "логическое_и";
-            inline static constexpr auto l_or   = "логическое_или";
-            inline static constexpr auto l_not  = "логическое_не";
-            inline static constexpr auto rand   = "случайное_число";
-            inline static constexpr auto round  = "округление";
-            inline static constexpr auto pow    = "степень";
-            inline static constexpr auto fact   = "факториал";
+            __DEF__(sum, "сложить");
+            __DEF__(sub, "разность");
+            __DEF__(mul, "умножить");
+            __DEF__(div, "делить");
+            __DEF__(mod, "остаток_от_деления");
+            __DEF__(log, "логарифм");
+            __DEF__(l_and, "логическое_и");
+            __DEF__(l_or, "логическое_или");
+            __DEF__(l_not, "логическое_не");
+            __DEF__(rand, "случайное_число");
+            __DEF__(round, "округление");
+            __DEF__(pow, "степень");
+            __DEF__(fact, "факториал");
         }
 
         namespace time {
-            inline static constexpr auto cur_date = "текущая_дата";
-            inline static constexpr auto cur_time = "текущее_время";
+            __DEF__(cur_date, "текущая_дата");
+            __DEF__(cur_time, "текущее_время");
         }
 
         namespace file {
-            inline static constexpr auto create = "создать_файл";
-            inline static constexpr auto remove = "удалить_файл";
-            inline static constexpr auto open   = "открыть_файл";
-            inline static constexpr auto read   = "прочитать_файл";
-            inline static constexpr auto copy   = "скопировать_файл";
-            inline static constexpr auto write  = "написать_в_файл";
-            inline static constexpr auto add    = "добавить_в_файл";
-            inline static constexpr auto move   = "переместить_файл";
-            inline static constexpr auto close  = "закрыть_файл";
+            __DEF__(create, "создать_файл");
+            __DEF__(remove, "удалить_файл");
+            __DEF__(open, "открыть_файл");
+            __DEF__(read, "прочитать_файл");
+            __DEF__(copy, "скопировать_файл");
+            __DEF__(write, "написать_в_файл");
+            __DEF__(add,  "добавить_в_файл");
+            __DEF__(move , "переместить_файл");
+            __DEF__(close, "закрыть_файл");
         }
 
         namespace folder {
-            inline static constexpr auto newfolder  = "новая_папка"; 
-            inline static constexpr auto remfolder  = "удалить_папку"; 
-            inline static constexpr auto movefolder  = "переместить_папку";  
+            __DEF__(newfolder, "создать_папку");
+            __DEF__(remfolder, "удалить_папку");
+            __DEF__(movefolder, "переместить_папку");
         }
 
         namespace container {
-            
         }
 
         namespace string {
-            inline static constexpr auto add            = "сложить_строки";
-            inline static constexpr auto substring      = "найти_подстроку";
-            inline static constexpr auto lenght         = "длина_строки";
-            inline static constexpr auto find_string    = "найти_строку";
-            inline static constexpr auto find_char      = "найти_символ";
+            __DEF__(add, "сложить_строки");
+            __DEF__(substring, "найти_подстроку");
+            __DEF__(lenght, "длина_строки");
+            __DEF__(find_string, "найти_строку");
+            __DEF__(find_char, "найти_символ");
         }
 
 
-        namespace flow { // stream
-            // inline static constexpr auto __if  = "если";
-            inline static constexpr auto loop = "цикл";
-            inline static constexpr auto repeat  = "повторять";
+        namespace flow {
+            // stream
+            __DEF__(loop, "цикл");
+            __DEF__(repeat, "повторять");
         }
-
-
     }
 
     namespace errors {
 
-        namespace lexer {
-            
+        namespace main {
+            __DEF__(__this__,  "[Ошибка]");
+            __DEF__(extension, "Неверное расширение файла");
+            __DEF__(args, "Неверное кол-во параметров");
         }
 
         namespace parser {
-            inline static constexpr auto expected_char = "Ожидается символ";
-            inline static constexpr auto expected_id = "Ожидается идентификатор";
-            inline static constexpr auto unknown_type = "Неизвестный тип данных";
+            __DEF__(__this__, "[Синтаксческая ошибка]");
+            __DEF__(expected_char, "Ожидается символ");
+            __DEF__(expected_id, "Ожидается тип токена: 'идентификатор'");
+            __DEF__(unknown_type, "Неизвестный тип токена");
         }
 
         namespace runtime {
-            
         }
-
     }
-
 }

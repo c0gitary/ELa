@@ -4,15 +4,20 @@ std::string Parser::parse_id() {
     if(this->cur_token < this->tokens.size() && this->tokens[this->cur_token].type == Token::Type::IDENTIFIER) {
         return  this->tokens[this->cur_token++].name;
     }
-    throw std::runtime_error("Expected identifier");
+    return error::ThrowParser::error_expected_id<std::string>(
+        this->tokens[this->cur_token].name,
+        utils::get_token_in_str(this->tokens[this->cur_token].type)
+    );
 }
 
-void Parser::expect(Token::Type &&type, char expected_char) {
-    if(this->cur_token < this->tokens.size() && this->tokens[this->cur_token].type == type && this->tokens[this->cur_token].name[0] == expected_char) {
+void Parser::expect(Token::Type &&type, const char expected_char) {
+    if(this->cur_token < this->tokens.size() && this->tokens[this->cur_token].type == type && this->tokens[this->cur_token].name[0] == expected_char)
         this->cur_token++;
-    } else {
-        throw std::runtime_error("Expected: " + std::string(1, expected_char));
-    }
+    else
+        return error::ThrowParser::error_expected_char<void>(
+            expected_char,
+            this->tokens[this->cur_token].name[0]
+        );
 }
 
 bool Parser::eq_token_type(Token::Type &&type) const {
@@ -50,8 +55,9 @@ Parameter::Type Parser::parse_type() const {
     if(this->eq_token_type(Token::Type::IDENTIFIER)) {
         return Parameter::Type::IDENTIFIER;
     }
-
-    throw std::runtime_error("Unknow type");
+    return error::ThrowParser::error_unknown_type<decltype(this->parse_type())>(
+        utils::get_token_in_str(this->tokens[this->cur_token].type)
+    );
 }
 
 Parser::Parser(const std::vector<Token> &__tokens)
@@ -71,8 +77,6 @@ void Parser::print_functions(const std::vector<Function>& fns) {
         std::cout << std::endl;
     }
 }
-
-
 
 Function Parser::parse_function() {
     Function __function;
