@@ -24,6 +24,7 @@ namespace builtins {
         static void input(State&);
         static void clear(State&);
         static void pause(State&);
+        static void new_line(State&);
     }
 
     namespace file {
@@ -99,6 +100,7 @@ namespace builtins {
         {defines::builtins::io::input, io::input},
         {defines::builtins::io::output, io::print},
         {defines::builtins::io::pause, io::pause},
+        {defines::builtins::io::new_line, io::new_line},
 
         {defines::builtins::string::add, string::concat},
         {defines::builtins::string::lenght, string::lenght},
@@ -108,7 +110,7 @@ namespace builtins {
         {defines::builtins::time::cur_time, time::current_time},
 
         {defines::builtins::file::create, file::create},
-        // {defines::builtins::file::open, file::open},
+        {defines::builtins::file::open, file::open},
         {defines::builtins::file::read, file::read},
         {defines::builtins::file::write, file::write},
         {defines::builtins::file::add, file::add},
@@ -203,7 +205,7 @@ inline void builtins::internal::new_var(State & s) {
         }
         return;
     }
-    throw std::runtime_error("Invalid args");
+    throw std::runtime_error("INTERNAL::NEW_VAR -> Invalid args");
 }
 
 inline void builtins::internal::remove_var(State& s) { 
@@ -218,6 +220,9 @@ inline void builtins::io::print(State & s) {
     for(std::size_t i{}; i < s.params.size(); i++) {
         std::cout << (utils::is_id_param(s.params[i]) ? s.get_var(s.params[i].name).value : utils::extract_content(s.params[i].name)) << ' ';
     }
+}
+
+inline void builtins::io::new_line(State&) {
     std::cout << std::endl;
 }
 
@@ -320,6 +325,12 @@ inline void builtins::file::copy(State &s) {
     }
 }
 
+inline void builtins::file::open(State &s) {
+    if(s.params.size() == 1) {
+        const auto path = (utils::is_id_param(s.params[0]) ? s.get_var(s.params[0].name).value : s.params[0].name);
+        system(std::string(path).c_str());
+    }
+}
 
 inline void builtins::string::concat(State &s) {
     if(s.params.size() == 3 && utils::is_id_param(s.params[0])) {
