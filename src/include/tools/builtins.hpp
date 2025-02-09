@@ -181,7 +181,7 @@ inline void builtins::flow::repeat(State& s){
     }
     return error::ThrowRuntime::error(defines::builtins::flow::repeat, "Неверные кол-во параметров");
 }
-
+    
 inline void builtins::internal::new_var(State & s) {
     if(s.params.size() == 2) {
         const auto ty_var = utils::get_type_param(s.params[1]);
@@ -227,13 +227,11 @@ inline void builtins::io::new_line(State&) {
 }
 
 inline void builtins::io::input(State &s) {
-    if(s.params.size() == 1 && utils::is_id_param(s.params[0])) {
+    for(std::size_t i{}; i < s.params.size(); i++) {
         std::string __input;
         std::getline(std::cin, __input);
         s.set_var(Variable::Type::STRING, s.params[0].name, __input);
-        return;
     }
-    return error::ThrowRuntime::error(defines::builtins::io::input, "Неверные кол-во параметров");
 }
 
 inline void builtins::io::pause(State &) {
